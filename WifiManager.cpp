@@ -6,31 +6,32 @@
 #else	
 	WiFiClient WifiManager::wifiClient;
 #endif
-String WifiManager::WIFI_SSID = "eduroam";
-String WifiManager::WIFI_PASSWORD = "";
-String WifiManager::WIFI_LOGIN_USERNAME = "joao.andre";
-String WifiManager::WIFI_LOGIN_PASSWORD = ""; // Deixe vazio para fazer login quando inciar o código
+
+String WifiManager::Wifi_Ssid;
+String WifiManager::Wifi_Password;
+String WifiManager::Wifi_Login_Username;
+String WifiManager::Wifi_Login_Password;
 
 void WifiManager::HandleEAP_Wifi() {
-	WiFi.disconnect(true); 
   	WiFi.mode(WIFI_STA); 
-	esp_eap_client_set_identity((uint8_t *)WIFI_LOGIN_USERNAME.c_str(), strlen(WIFI_LOGIN_USERNAME.c_str()));
-  	esp_eap_client_set_username((uint8_t *)WIFI_LOGIN_USERNAME.c_str(), strlen(WIFI_LOGIN_USERNAME.c_str()));
-  	esp_eap_client_set_password((uint8_t *)WIFI_LOGIN_PASSWORD.c_str(), strlen(WIFI_LOGIN_PASSWORD.c_str()));
+	esp_eap_client_set_identity((uint8_t *)Wifi_Login_Username.c_str(), strlen(Wifi_Login_Username.c_str()));
+  	esp_eap_client_set_username((uint8_t *)Wifi_Login_Username.c_str(), strlen(Wifi_Login_Username.c_str()));
+  	esp_eap_client_set_password((uint8_t *)Wifi_Login_Password.c_str(), strlen(Wifi_Login_Password.c_str()));
 	
 	esp_eap_client_set_ttls_phase2_method(ESP_EAP_TTLS_PHASE2_PAP);
 	esp_wifi_sta_enterprise_enable();
-	WIFI_PASSWORD = "";
+	Wifi_Password = "";
 }
 
 // Conectar ao wifi
 bool WifiManager::InitWiFi() // Conectar ao Wifi
 {
 	Serial.print("Conectando ao Wifi.");
-  	if (WIFI_SSID == "eduroam") {
+	WiFi.disconnect(true); 
+  	if (Wifi_Ssid == "eduroam") {
 		HandleEAP_Wifi();
   	} 
-	WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+	WiFi.begin(Wifi_Ssid, Wifi_Password);
 
 	uint32_t _connection_time = 0U;
 	while (WiFi.status() != WL_CONNECTED) {
@@ -53,24 +54,24 @@ bool WifiManager::InitWiFi() // Conectar ao Wifi
 }
 
 // Login Manual ao wifi, se a conexão automática falhar
-void WifiManager::LoginWifi(String Wifi_Ssid, String Wifi_Password, String Wifi_Login_Username, String Wifi_Login_Password) {
-   if (Wifi_Ssid != "") {
-      WIFI_SSID = Wifi_Ssid;
-      WIFI_PASSWORD = Wifi_Password;
-      WIFI_LOGIN_USERNAME = Wifi_Login_Username; 
-      WIFI_LOGIN_PASSWORD = Wifi_Login_Password;
+void WifiManager::LoginWifi(const char* _Wifi_Ssid, const char* _Wifi_Password, const char* _Wifi_Login_Username, const char* _Wifi_Login_Password) {
+   if (_Wifi_Ssid != "") {
+      Wifi_Ssid = _Wifi_Ssid;
+      Wifi_Password = _Wifi_Password;
+      Wifi_Login_Username = _Wifi_Login_Username; 
+      Wifi_Login_Password = _Wifi_Login_Password;
    }
 	while (!InitWiFi()) 
 	{
 		Serial.println("ERRO - Insira as credenciais do Wifi: ");
-		WIFI_SSID = Input("Nome do Wifi: ");
+		Wifi_Ssid = Input("Nome do Wifi: ");
 
-		if (WIFI_SSID == "eduroam" || WIFI_SSID == "UFPR_SEM_FIO") {
-			WIFI_LOGIN_USERNAME = Input("Usuário de " + WIFI_SSID + ": ");
-			WIFI_LOGIN_PASSWORD = Input("Senha do usuário " + WIFI_LOGIN_USERNAME + ": ");
+		if (Wifi_Ssid == "eduroam" || Wifi_Ssid == "UFPR_SEM_FIO") {
+			Wifi_Login_Username = Input("Usuário de " + Wifi_Ssid + ": ");
+			Wifi_Login_Password = Input("Senha do usuário " + Wifi_Login_Username + ": ");
 			continue;
 		}
-		WIFI_PASSWORD = Input("Senha do Wifi: ");
+		Wifi_Password = Input("Senha do Wifi: ");
 	}
 }
 
@@ -84,7 +85,7 @@ bool WifiManager::IsWifiConnected() {
 }
 
 /*
-// Conectar ao UFPR_SEM_FIO se precisar (NÃO RECOMENDADO, POSSÍVEL BARRAMENTO DO ESP32)
+// Conectar ao UFPR_SEM_FIO se precisar (NÃO RECOMENDADO)
 void HandleCaptivePortal() { 
 	HTTPClient http;
 	http.begin(WIFI_PORTAL_URL);

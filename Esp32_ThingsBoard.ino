@@ -1,12 +1,18 @@
 /* Projeto Láb. Iot, Conexão Esp32 ao servidor Thingsboard, UFPR - Autor: João André A. da Silva */
+#define ENCRYPTED false
+#include "WifiManager.h"
 #include "IoT_Manager.h"
 
-#define THINGSBOARD_SERVER ""
-#define THINGSBOARD_TOKEN ""
+#define THINGSBOARD_SERVER "bellatrix.eletrica.ufpr.br"
+#define THINGSBOARD_TOKEN "98pf2pi8h7xvi6mgjmgd"
 #define MEASUREMENT_INTERVAL 10
 
-void DoSomething(const JsonVariantConst &data, JsonDocument &response)
-{
+#define WIFI_SSID "eduroam"
+#define WIFI_PASSWORD ""
+#define WIFI_LOGIN_USERNAME "joao.andre"
+#define WIFI_LOGIN_PASSWORD "" // Deixe vazio para fazer login quando inciar o código
+
+void DoSomething(const JsonVariantConst &data, JsonDocument &response) {
    Serial.println("Executando código solicitado via método RPC.");
 
 	// ... Executar código desejável
@@ -30,6 +36,7 @@ IoT_Manager device(THINGSBOARD_SERVER, THINGSBOARD_TOKEN, MEASUREMENT_INTERVAL, 
 void setup() {
 	Serial.begin(115200);
 	delay(1000); // Tempo para iniciar o Serial
+	WifiManager::LoginWifi(WIFI_SSID, WIFI_PASSWORD, WIFI_LOGIN_USERNAME, WIFI_LOGIN_PASSWORD);
 	device.Initialize();
 }
 

@@ -8,7 +8,7 @@ String Input(String message) {
 }
 
 IoT_Manager::IoT_Manager(const char* Server, const char* Token, const uint16_t& MeasurementInterval, const std::vector<String>& Atributes, const std::array<RPC_Callback, MAX_RPC_CALLBACKS>& callbacks)
-	: ThingsBoard_Server(Server), // Use initializer list for members
+	: ThingsBoard_Server(Server),
      ThingsBoard_Token(Token),
 	  Measurement_Interval(MeasurementInterval),
 	  AtributesList(Atributes),
@@ -38,7 +38,6 @@ bool IoT_Manager::InitTB(bool SubscribeToRPC) {
 
 void IoT_Manager::Initialize() 
 {
-	WifiManager::LoginWifi();
 	InitTB(true);
 
 	Serial.print("Estabelecendo conexão com NTP.");

@@ -9,7 +9,9 @@
 #include <Arduino_MQTT_Client.h>
 #include <ThingsBoard.h>
 
-#define MAX_RPC_CALLBACKS 2
+#ifndef MAX_RPC_CALLBACKS
+  #define MAX_RPC_CALLBACKS 2
+#endif
 String Input(String message);
 
 class IoT_Manager {

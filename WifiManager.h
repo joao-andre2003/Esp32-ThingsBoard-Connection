@@ -3,26 +3,28 @@
 #define WIFI_MANAGER
 
 #include "IoT_Manager.h"
+//#include <ESP8266WiFi.h>  // -> Se for um ESP8266
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "esp_eap_client.h"
-//#include <ESP8266WiFi.h>  // -> Se for um ESP8266
 //#include <HTTPClient.h> //-> UFPR_SEM_FIO
-#define ENCRYPTED false
+#ifndef ENCRYPTED
+  #define ENCRYPTED false
+#endif
 
 class WifiManager {
    public:
-      static void LoginWifi(String Wifi_Ssid="", String Wifi_Password="", String Wifi_Login_Username="", String Wifi_Login_Password="");
+      static void LoginWifi(const char* _Wifi_Ssid="", const char* _Wifi_Password="", const char* _Wifi_Login_Username="", const char* _Wifi_Login_Password="");
       static bool IsWifiConnected();
       #if ENCRYPTED
 	      static WiFiClientSecure wifiClient;
       #else	
          static WiFiClient wifiClient;
       #endif
-      static String WIFI_SSID;
-      static String WIFI_PASSWORD;
-      static String WIFI_LOGIN_USERNAME;
-      static String WIFI_LOGIN_PASSWORD;
+      static String Wifi_Ssid;
+      static String Wifi_Password;
+      static String Wifi_Login_Username;
+      static String Wifi_Login_Password;
    private:
       WifiManager() {}
       static void HandleEAP_Wifi();
