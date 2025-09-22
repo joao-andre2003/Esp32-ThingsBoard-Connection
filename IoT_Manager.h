@@ -16,10 +16,10 @@ String Input(String message);
 
 class IoT_Manager {
    public:
-      IoT_Manager(const char* Server, const char* Token, const uint16_t& MeasurementInterval, const std::vector<String>& Atributes, const std::array<RPC_Callback, MAX_RPC_CALLBACKS>& callbacks);
+      IoT_Manager(const char* Server, const char* Token, const uint16_t MeasurementInterval, const std::vector<const char*>* Atributes, const std::array<RPC_Callback, MAX_RPC_CALLBACKS>* callbacks);
       bool IsThingsBoardConnected();
       bool NextMeasurement();
-      void SendData(std::vector<float> measurement);
+      void SendData(std::vector<float>& measurement);
       void Initialize();
    private:
       bool InitTB(bool SubscribeToRPC=false);
@@ -34,11 +34,11 @@ class IoT_Manager {
       #endif
       Arduino_MQTT_Client mqttClient;
       ThingsBoard tb;
-      const std::array<RPC_Callback, MAX_RPC_CALLBACKS> Callbacks;
+      const std::array<RPC_Callback, MAX_RPC_CALLBACKS>* Callbacks;
       Server_Side_RPC<MAX_RPC_CALLBACKS, MAX_RPC_CALLBACKS> rpc;
       std::array<IAPI_Implementation*, 1> apis = { &rpc };
 
-      std::vector<String> AtributesList;
+      const std::vector<const char*>* AtributesList;
       const uint8_t Atributes_Size;
       std::vector<std::vector<float>> data_list;
 

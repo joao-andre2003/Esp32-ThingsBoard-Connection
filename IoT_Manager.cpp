@@ -7,12 +7,12 @@ String Input(String message) {
 	return Serial.readStringUntil('\n');
 }
 
-IoT_Manager::IoT_Manager(const char* Server, const char* Token, const uint16_t& MeasurementInterval, const std::vector<String>& Atributes, const std::array<RPC_Callback, MAX_RPC_CALLBACKS>& callbacks)
+IoT_Manager::IoT_Manager(const char* Server, const char* Token, const uint16_t MeasurementInterval, const std::vector<const char*>* Atributes, const std::array<RPC_Callback, MAX_RPC_CALLBACKS>* callbacks)
 	: ThingsBoard_Server(Server),
      ThingsBoard_Token(Token),
 	  Measurement_Interval(MeasurementInterval),
 	  AtributesList(Atributes),
-	  Atributes_Size(Atributes.size()),
+	  Atributes_Size(Atributes->size()),
 	  Callbacks(callbacks),
 	  mqttClient(WifiManager::wifiClient),
 	  tb(mqttClient, MAX_MESSAGE_SEND_RECEIVE_SIZE, MAX_MESSAGE_SEND_RECEIVE_SIZE, Default_Max_Stack_Size, apis)
@@ -25,8 +25,8 @@ bool IoT_Manager::InitTB(bool SubscribeToRPC) {
 		Serial.printf("ERRO - Conexão ThingsBoard - %d\n", mqttClient.connected());
     	return false;
   	}
-  	if (SubscribeToRPC && Callbacks.size() <= 0) { // Lidar com inscrições RPC
-    	if (!rpc.RPC_Subscribe(Callbacks.cbegin(), Callbacks.cend())) {
+  	if (SubscribeToRPC && Callbacks->size() > 0) { // Lidar com inscrições RPC
+    	if (!rpc.RPC_Subscribe(Callbacks->cbegin(), Callbacks->cend())) {
       	Serial.println("ERRO - Falha na inscrição do método RPC.");
       	return false;
    	 }
@@ -66,7 +66,7 @@ bool IoT_Manager::NextMeasurement() {
 	return true;
 }
 
-void IoT_Manager::SendData(std::vector<float> measurement) 
+void IoT_Manager::SendData(std::vector<float>& measurement) 
 {
 	data_list.push_back(measurement);
 
@@ -88,7 +88,7 @@ void IoT_Manager::SendData(std::vector<float> measurement)
 
 		JsonObject values = Json_Data.createNestedObject("values");
 		for(int j=0; j<Atributes_Size; ++j) 
-			values[AtributesList[j]] = data_list[i][j];
+			values[(*AtributesList)[j]] = data_list[i][j];
 
 		String String_Data;
 		serializeJson(Json_Data, String_Data);
